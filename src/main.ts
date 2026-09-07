@@ -1,4 +1,5 @@
 import './styles.css';
+import { registerSW } from 'virtual:pwa-register';
 import { audio } from './audio/context';
 import { Music } from './audio/music';
 import { sfx } from './audio/sfx';
@@ -10,6 +11,7 @@ import { Renderer } from './render/renderer';
 import { Hud } from './ui/hud';
 
 setLang(detectLang(), false);
+registerSW({ immediate: true });
 
 const canvas = document.getElementById('game') as HTMLCanvasElement;
 const renderer = new Renderer(canvas);

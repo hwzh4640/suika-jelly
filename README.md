@@ -11,6 +11,8 @@ Grow a watermelon, don't let the jar overflow.
 - Original chiptune loop and all sound effects are synthesised in the browser with Web Audio;
   no audio files. The tempo creeps up as the jar fills. `M` toggles mute, `P` pauses.
 - Physics by [matter-js](https://brm.io/matter-js/); everything else is hand-drawn Canvas 2D.
+- Installable PWA: add to Home Screen on iOS/Android for a full-screen, offline-capable app with
+  its own icon and launch screens. Shared links show a preview card.
 
 ## Develop
 
@@ -20,6 +22,7 @@ npm run dev        # http://localhost:5173/suika-jelly/
 npm test           # vitest: rules, merge maths, song data, i18n
 npm run build      # tsc + vite → dist/
 npm run smoke      # headless Chromium: plays, checks audio output, screenshots to /tmp
+npm run assets     # regenerate icons, iOS launch screens and cover.png into public/
 ```
 
 Pushes to `main` deploy through GitHub Actions to GitHub Pages.
