@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Suika Jelly" />
+    <meta name="theme-color" content="#ffd9bf" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://pages.hz.ax/suika-jelly/" />
+    <title>Suika Jelly · 果冻合成大西瓜</title>
+    <meta name="description" content="Drop glossy jelly fruits into a mason jar and merge matching pairs into a watermelon. A free browser Suika game with original chiptune music. English · 简体中文 · 繁體中文. Phone and desktop." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Suika Jelly · 果冻合成大西瓜" />
+    <meta property="og:description" content="Drop jelly fruits into a mason jar, merge pairs, grow a watermelon. Play free in your browser." />
+    <meta property="og:url" content="https://pages.hz.ax/suika-jelly/" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="zh_CN" />
+    <meta property="og:locale:alternate" content="zh_TW" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="game"></canvas>
+      <div id="hud" class="hidden">
+        <div class="pill" id="scorePill"><span class="label" data-t="hud.score"></span><span class="value" id="score">0</span></div>
+        <div class="pill" id="bestPill"><span class="label" data-t="hud.best"></span><span class="value" id="best">0</span></div>
+        <div class="pill" id="nextPill"><span class="label" data-t="hud.next"></span><canvas id="nextIcon" width="1" height="1"></canvas></div>
+      </div>
+      <div id="ring" class="hidden"><div class="ring-title" data-t="ring.title"></div><div class="ring-items"></div></div>
+      <div id="corner">
+        <button id="muteBtn" class="icon-btn" type="button" aria-label="Mute"></button>
+        <button id="pauseBtn" class="icon-btn hidden" type="button" aria-label="Pause">⏸</button>
+      </div>
+      <div id="overlay" class="overlay hidden"></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
