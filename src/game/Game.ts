@@ -1,4 +1,4 @@
-import { DANGER_Y, DROP_COOLDOWN, DROP_Y, JAR_BOTTOM, JAR_X0, JAR_X1, OVERFLOW_SECONDS, STEP_MS } from './constants';
+import { DANGER_Y, DROP_COOLDOWN, DROP_Y, JAR_BOTTOM, JAR_X0, JAR_X1, NECK_X0, NECK_X1, OVERFLOW_SECONDS, STEP_MS } from './constants';
 import { DROP_TIERS, SCORE, fruit, nextTier } from './fruits';
 import { mergedVelocity, midpoint, resolveMergePairs } from './merge';
 import { Physics } from './Physics';
@@ -110,10 +110,10 @@ export class Game {
     this.events.onStateChange?.(s);
   }
 
-  /** Clamp an x so the held fruit stays inside the jar walls. */
+  /** Clamp an x so the held fruit fits through the jar's mouth. */
   clampX(x: number, tier = this.current): number {
     const r = fruit(tier).r;
-    return Math.min(JAR_X1 - r - 2, Math.max(JAR_X0 + r + 2, x));
+    return Math.min(NECK_X1 - r - 2, Math.max(NECK_X0 + r + 2, x));
   }
 
   setAim(x: number): void {

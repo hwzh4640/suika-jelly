@@ -53,11 +53,6 @@ async function run(name, viewport, opts = {}) {
     await page.evaluate((x) => window.__game.drop(x), 80 + ((i * 53) % 320));
     await page.waitForTimeout(500);
   }
-  // Force a couple of big merges so large tiers show up.
-  await page.evaluate(() => { window.__game.spawn(8, 150, 300); window.__game.spawn(8, 330, 300); });
-  await page.waitForTimeout(900);
-  await page.evaluate(() => { window.__game.spawn(9, 240, 250); });
-  await page.waitForTimeout(1500);
   // Music must be running and actually producing signal on the master bus.
   const sound = await page.evaluate(async () => {
     const { audio, music } = window.__game;
@@ -74,6 +69,11 @@ async function run(name, viewport, opts = {}) {
     }
     return { state: audio.ctx.state, playing: music.playing, peak, bpm: music.bpm };
   });
+  // Force a couple of big merges so large tiers show up (low in the jar so they don't trip the overflow rule).
+  await page.evaluate(() => { window.__game.spawn(8, 150, 560); window.__game.spawn(8, 330, 560); });
+  await page.waitForTimeout(900);
+  await page.evaluate(() => { window.__game.spawn(9, 240, 480); });
+  await page.waitForTimeout(1500);
   const score = await page.evaluate(() => window.__game.score());
   const state = await page.evaluate(() => window.__game.state());
   const bodies = await page.evaluate(() => window.__game.bodies().length);

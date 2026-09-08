@@ -5,7 +5,8 @@ import { Effects, Wobbles } from './effects';
 import { SPRITE_PAD, clearSpriteCache, getSprite } from './fruitSprites';
 import { buildJarLayers, type JarLayers } from './jar';
 
-export const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans CJK TC", sans-serif';
+import { FONT } from './font';
+export { FONT };
 
 /** World-space y where the table surface starts (behind the jar). */
 const TABLE_Y = 610;

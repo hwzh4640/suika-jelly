@@ -1,9 +1,9 @@
 import Matter from 'matter-js';
-import { JAR_BOTTOM, JAR_X0, JAR_X1, STEP_MS, WORLD_H } from './constants';
+import { JAR_BOTTOM, JAR_X0, JAR_X1, NECK_X0, NECK_X1, NECK_Y, SHOULDER_Y, STEP_MS, WORLD_H } from './constants';
 import { fruit } from './fruits';
 import type { Pair } from './merge';
 
-const { Engine, Bodies, Body, Composite, Events, Vector } = Matter;
+const { Engine, Bodies, Body, Composite, Events, Vector, Vertices } = Matter;
 
 export interface FruitData {
   tier: number;
@@ -15,6 +15,12 @@ export type FruitBody = Matter.Body & { plugin: FruitData };
 
 export function isFruit(b: Matter.Body): b is FruitBody {
   return b.label === 'fruit';
+}
+
+/** Static convex polygon placed exactly where its vertices say. */
+function shoulder(verts: Matter.Vector[], opts: Matter.IBodyDefinition): Matter.Body {
+  const c = Vertices.centre(verts);
+  return Bodies.fromVertices(c.x, c.y, [verts], opts);
 }
 
 /** Thin wrapper around a matter-js engine holding the jar walls and the fruit bodies. */
@@ -42,6 +48,9 @@ export class Physics {
       // Chamfers so nothing wedges in the bottom corners and the floor reads as a curved jar base.
       Bodies.rectangle(JAR_X0, JAR_BOTTOM, 28, 28, { ...wallOpts, angle: Math.PI / 4 }),
       Bodies.rectangle(JAR_X1, JAR_BOTTOM, 28, 28, { ...wallOpts, angle: Math.PI / 4 }),
+      // Shoulders: the neck is narrower than the body, so slope in from the body wall to the neck wall.
+      shoulder([{ x: JAR_X0, y: SHOULDER_Y }, { x: NECK_X0, y: NECK_Y }, { x: NECK_X0, y: -WORLD_H }, { x: JAR_X0 - thick, y: -WORLD_H }, { x: JAR_X0 - thick, y: SHOULDER_Y }], wallOpts),
+      shoulder([{ x: JAR_X1, y: SHOULDER_Y }, { x: NECK_X1, y: NECK_Y }, { x: NECK_X1, y: -WORLD_H }, { x: JAR_X1 + thick, y: -WORLD_H }, { x: JAR_X1 + thick, y: SHOULDER_Y }], wallOpts),
     ];
     Composite.add(this.engine.world, walls);
 
