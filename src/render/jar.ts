@@ -201,6 +201,12 @@ function drawBack(g: CanvasRenderingContext2D): void {
   g.beginPath();
   g.ellipse(CX, RIM_Y, LIP_OUT, ry(LIP_OUT), 0, 0, Math.PI * 2);
   g.stroke();
+  // Glint along the far edge of the bead. Lives back here so a fruit hovering in the mouth covers it.
+  g.strokeStyle = 'rgba(255,255,255,0.55)';
+  g.lineWidth = 2;
+  g.beginPath();
+  g.ellipse(CX, RIM_Y, LIP_OUT - 4, ry(LIP_OUT) - 3, 0, Math.PI * 1.15, Math.PI * 1.55);
+  g.stroke();
   g.restore();
   // Mouth: the inner wall curving away, dark at the back, clear toward the front.
   g.save();
@@ -400,11 +406,6 @@ function drawFront(g: CanvasRenderingContext2D): void {
   g.lineWidth = 3;
   g.beginPath();
   g.ellipse(CX, RIM_Y, LIP_OUT - 4, ry(LIP_OUT) - 3, 0, Math.PI * 0.55, Math.PI * 0.92);
-  g.stroke();
-  g.strokeStyle = 'rgba(255,255,255,0.55)';
-  g.lineWidth = 2;
-  g.beginPath();
-  g.ellipse(CX, RIM_Y, LIP_OUT - 4, ry(LIP_OUT) - 3, 0, Math.PI * 1.15, Math.PI * 1.55);
   g.stroke();
   // Shadow the lip casts onto the neck, following the bead's curve.
   g.save();
