@@ -54,7 +54,10 @@ function sideProfile(g: CanvasRenderingContext2D, side: -1 | 1, inset = 0, start
   g.lineTo(x(BODY_OUT), BASE_Y);
 }
 
-/** Closed outer silhouette: down the left, around the base, up the right, across under the lip. */
+/**
+ * Outer silhouette: down the left, around the base, up the right. Left open at the top so a
+ * stroke never draws a line across the mouth; fills and clips close it implicitly.
+ */
 function silhouette(g: CanvasRenderingContext2D, inset = 0): void {
   g.beginPath();
   sideProfile(g, -1, inset);
@@ -64,7 +67,6 @@ function silhouette(g: CanvasRenderingContext2D, inset = 0): void {
   g.lineTo(x(BODY_OUT), SHOULDER_Y);
   g.bezierCurveTo(x(BODY_OUT), SHOULDER_Y - 18, x(NECK_OUT), NECK_Y + 26, x(NECK_OUT), NECK_Y);
   g.lineTo(x(NECK_OUT), RIM_Y + 6);
-  g.closePath();
 }
 
 /** Points along the thread helix; `front` selects the half facing the viewer. */
@@ -404,12 +406,18 @@ function drawFront(g: CanvasRenderingContext2D): void {
   g.beginPath();
   g.ellipse(CX, RIM_Y, LIP_OUT - 4, ry(LIP_OUT) - 3, 0, Math.PI * 1.15, Math.PI * 1.55);
   g.stroke();
-  // Shadow the lip casts onto the neck.
-  const lipShadow = g.createLinearGradient(0, RIM_Y + ry(LIP_OUT), 0, RIM_Y + ry(LIP_OUT) + 12);
-  lipShadow.addColorStop(0, 'rgba(40,80,120,0.28)');
-  lipShadow.addColorStop(1, 'rgba(40,80,120,0)');
-  g.fillStyle = lipShadow;
-  g.fillRect(CX - NECK_OUT, RIM_Y + ry(LIP_OUT), NECK_OUT * 2, 12);
+  // Shadow the lip casts onto the neck, following the bead's curve.
+  g.save();
+  g.beginPath();
+  g.rect(0, RIM_Y + ry(LIP_OUT) - 2, WORLD_W, 20);
+  g.clip();
+  g.filter = 'blur(3px)';
+  g.strokeStyle = 'rgba(40,80,120,0.30)';
+  g.lineWidth = 8;
+  g.beginPath();
+  g.ellipse(CX, RIM_Y + 5, LIP_OUT - 6, ry(LIP_OUT), 0, 0.12, Math.PI - 0.12);
+  g.stroke();
+  g.restore();
 
   // Light pooling on the table in front of the jar.
   g.save();
