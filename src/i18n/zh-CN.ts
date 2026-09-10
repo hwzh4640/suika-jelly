@@ -6,6 +6,7 @@ export const zhCN: Strings = {
   'menu.play': '开始游戏',
   'menu.howtoTouch': '拖动瞄准，松开手指投放。两个相同的果冻碰到一起会合成更大的水果。别让罐子溢出来！',
   'menu.howtoMouse': '移动鼠标瞄准，点击投放（也可用 ← → 和空格）。两个相同的果冻碰到一起会合成更大的水果。别让罐子溢出来！',
+  'menu.newGame': '新游戏',
   'menu.language': '语言',
   'menu.sound': '声音',
   'hud.score': '得分',

@@ -54,6 +54,7 @@ const hud = new Hud({
   play: () => {
     audio.unlock();
     sfx.click();
+    paused = false;
     game.newGame();
     hud.setNext(game.next);
   },
@@ -65,10 +66,21 @@ const hud = new Hud({
   },
   menu: () => {
     sfx.click();
-    paused = false;
-    music.stop(0.3);
-    game.state = 'title';
-    hud.title();
+    // A game in progress stays paused behind the menu so it can be resumed.
+    if (game.state === 'playing') {
+      paused = true;
+      music.stop(0.3);
+      hud.title(true);
+    } else {
+      paused = false;
+      music.stop(0.3);
+      game.state = 'title';
+      hud.title();
+    }
+  },
+  pause: () => {
+    sfx.click();
+    if (game.state === 'playing' && !paused) togglePause();
   },
   resume: () => {
     sfx.click();

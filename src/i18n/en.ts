@@ -4,6 +4,7 @@ export const en = {
   'menu.play': 'Play',
   'menu.howtoTouch': 'Drag to aim, lift your finger to drop. Two identical jellies merge into the next fruit. Don’t let the jar overflow!',
   'menu.howtoMouse': 'Move the mouse to aim, click to drop (or ← → and Space). Two identical jellies merge into the next fruit. Don’t let the jar overflow!',
+  'menu.newGame': 'New game',
   'menu.language': 'Language',
   'menu.sound': 'Sound',
   'hud.score': 'Score',

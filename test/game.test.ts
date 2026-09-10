@@ -50,6 +50,17 @@ describe('Game', () => {
     expect(g.bodies().map((b) => b.tier).sort()).toEqual([2, 4]);
   });
 
+  it('reports the upcoming fruit, not the held one, when a drop happens', () => {
+    const seen: number[] = [];
+    let g: Game;
+    g = new Game({ onDrop: () => seen.push(g.next) }, new MemStore());
+    g.newGame(6);
+    g.setQueue(1, 3);
+    g.drop(240);
+    expect(g.current).toBe(3);
+    expect(seen).toEqual([g.next]);
+  });
+
   it('a settled fruit above the danger line ends the game and persists best', () => {
     const store = new MemStore();
     let over: [number, number, boolean] | null = null;

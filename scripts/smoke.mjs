@@ -49,6 +49,29 @@ async function run(name, viewport, opts = {}) {
     else await page.mouse.click(x, y);
     await page.waitForTimeout(520);
   }
+  if (opts.pause) {
+    const before = await page.evaluate(() => window.__game.bodies().length);
+    await page.click('#pauseBtn');
+    await page.waitForSelector('#resumeBtn', { timeout: 3000 });
+    await page.waitForTimeout(400);
+    await page.click('#resumeBtn');
+    await page.waitForSelector('#resumeBtn', { state: 'detached' });
+    // Menu from pause keeps the game; the title then offers Resume.
+    await page.keyboard.press('KeyP');
+    await page.waitForSelector('#resumeBtn');
+    await page.click('.panel .btn.secondary:not(.active)');
+    await page.waitForSelector('#playBtn');
+    await page.waitForSelector('#resumeBtn');
+    await page.click('#resumeBtn');
+    const after = await page.evaluate(() => window.__game.bodies().length);
+    if (after !== before) throw new Error(`pause/resume lost fruit: ${before} -> ${after}`);
+    // Preview must match the fruit that gets dropped next.
+    const preview = await page.evaluate(() => window.__game.game.next);
+    await page.evaluate(() => window.__game.drop(240));
+    const held = await page.evaluate(() => window.__game.game.current);
+    if (held !== preview) throw new Error(`next preview ${preview} but held ${held}`);
+    console.log(`  ${name}: pause/resume/menu OK, next preview OK`);
+  }
   for (let i = 0; i < (opts.drops ?? 24); i++) {
     await page.evaluate((x) => window.__game.drop(x), 80 + ((i * 53) % 320));
     await page.waitForTimeout(500);
@@ -99,7 +122,7 @@ async function run(name, viewport, opts = {}) {
 }
 
 await run('mobile', { width: 390, height: 844 }, { dpr: 3, touch: true, locale: 'zh-CN' });
-await run('desktop', { width: 1280, height: 720 }, { drops: 30, gameOver: true });
+await run('desktop', { width: 1280, height: 720 }, { drops: 30, gameOver: true, pause: true });
 await run('zh-TW', { width: 800, height: 900 }, { query: '?lang=zh-TW', drops: 6 });
 
 await browser.close();

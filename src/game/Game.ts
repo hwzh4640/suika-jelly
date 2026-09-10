@@ -129,12 +129,14 @@ export class Game {
     if (x !== undefined) this.setAim(x);
     if (!this.canDrop) return false;
     const tier = this.current;
-    this.physics.spawn(tier, this.aimX, DROP_Y, this.time);
-    this.events.onDrop?.(tier, this.aimX);
+    const dropX = this.aimX;
+    this.physics.spawn(tier, dropX, DROP_Y, this.time);
+    // Advance the queue before telling listeners, so `next` already means the upcoming fruit.
     this.current = this.next;
     this.next = this.rollTier();
     this.aimX = this.clampX(this.aimX);
     this.cooldown = DROP_COOLDOWN;
+    this.events.onDrop?.(tier, dropX);
     return true;
   }
 

@@ -7,6 +7,7 @@ export interface HudActions {
   play(): void;
   restart(): void;
   menu(): void;
+  pause(): void;
   resume(): void;
 }
 
@@ -33,6 +34,7 @@ export class Hud {
   private bumpTimer = 0;
   private screen: 'none' | 'title' | 'over' | 'pause' = 'none';
   private overData = { score: 0, best: 0, newBest: false };
+  private titleCanResume = false;
   private rightMargin = 0;
 
   constructor(private actions: HudActions) {
@@ -42,7 +44,7 @@ export class Hud {
     });
     audio.onMuteChange(() => this.refreshMute());
     this.refreshMute();
-    this.pauseBtn.addEventListener('click', () => this.actions.menu());
+    this.pauseBtn.addEventListener('click', () => this.actions.pause());
     onLangChange(() => this.refresh());
     this.buildRing();
     this.refresh();
@@ -62,7 +64,7 @@ export class Hud {
     this.refreshMute();
     this.pauseBtn.setAttribute('aria-label', t('btn.pause'));
     document.title = `${t('app.title')}`;
-    if (this.screen === 'title') this.title();
+    if (this.screen === 'title') this.title(this.titleCanResume);
     else if (this.screen === 'over') this.gameOver(this.overData.score, this.overData.best, this.overData.newBest);
     else if (this.screen === 'pause') this.paused();
   }
@@ -169,8 +171,10 @@ export class Hud {
     this.updateRing();
   }
 
-  title(): void {
+  /** `canResume` adds a Resume button for a game that is paused behind the menu. */
+  title(canResume = false): void {
     this.screen = 'title';
+    this.titleCanResume = canResume;
     this.hud.classList.add('hidden');
     this.pauseBtn.classList.add('hidden');
     const p = document.createElement('div');
@@ -187,13 +191,25 @@ export class Hud {
     how.className = 'muted';
     how.textContent = t(isTouch ? 'menu.howtoTouch' : 'menu.howtoMouse');
     p.appendChild(how);
+    const row = document.createElement('div');
+    row.className = 'row';
+    if (canResume) {
+      const resume = document.createElement('button');
+      resume.type = 'button';
+      resume.className = 'btn primary';
+      resume.id = 'resumeBtn';
+      resume.textContent = t('btn.resume');
+      resume.addEventListener('click', () => this.actions.resume());
+      row.appendChild(resume);
+    }
     const play = document.createElement('button');
     play.type = 'button';
-    play.className = 'btn primary';
+    play.className = canResume ? 'btn' : 'btn primary';
     play.id = 'playBtn';
-    play.textContent = t('menu.play');
+    play.textContent = t(canResume ? 'menu.newGame' : 'menu.play');
     play.addEventListener('click', () => this.actions.play());
-    p.appendChild(play);
+    row.appendChild(play);
+    p.appendChild(row);
     p.appendChild(this.langRow());
     this.show(p);
   }
@@ -256,6 +272,7 @@ export class Hud {
     const resume = document.createElement('button');
     resume.type = 'button';
     resume.className = 'btn primary';
+    resume.id = 'resumeBtn';
     resume.textContent = t('btn.resume');
     resume.addEventListener('click', () => this.actions.resume());
     row.appendChild(resume);

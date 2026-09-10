@@ -6,6 +6,7 @@ export const zhTW: Strings = {
   'menu.play': '開始遊戲',
   'menu.howtoTouch': '拖曳瞄準，放開手指投放。兩個相同的果凍碰在一起會合成更大的水果。別讓罐子滿出來！',
   'menu.howtoMouse': '移動滑鼠瞄準，點擊投放（也可用 ← → 和空白鍵）。兩個相同的果凍碰在一起會合成更大的水果。別讓罐子滿出來！',
+  'menu.newGame': '新遊戲',
   'menu.language': '語言',
   'menu.sound': '聲音',
   'hud.score': '得分',
