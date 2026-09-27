@@ -11,9 +11,8 @@ import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import path from 'node:path';
 
-const PW = process.env.PLAYWRIGHT_CORE ?? '/home/hanwenz/.nvm/versions/node/v24.18.0/lib/node_modules/openclaw/node_modules/playwright-core/index.mjs';
 const CHROME = process.env.CHROME_PATH ?? path.join(homedir(), '.cache/ms-playwright/chromium-1223/chrome-linux/chrome');
-const { chromium } = await import(PW);
+const { chromium } = await import(process.env.PLAYWRIGHT_CORE ?? 'playwright-core');
 
 const browser = await chromium.launch({ executablePath: CHROME, args: ['--no-sandbox'] });
 const svg = readFileSync('public/icon.svg', 'utf8');

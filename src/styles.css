@@ -218,3 +218,82 @@ html, body {
   #nextIcon { width: 30px; height: 30px; }
   .panel { padding: 18px 16px; }
 }
+
+/* ---- Leaderboard ---- */
+.submit-box {
+  margin: 14px 0 4px;
+  padding: 14px 14px 12px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 2px 10px rgba(90, 50, 20, 0.08);
+}
+.submit-label { display: block; font-weight: 700; font-size: 15px; margin-bottom: 8px; }
+.submit-fields { display: flex; gap: 8px; align-items: stretch; }
+.name-input {
+  flex: 1;
+  min-width: 0;
+  /* 16px or more, or iOS zooms the page when the field is focused. */
+  font: 600 17px var(--font);
+  color: var(--ink);
+  background: #fff;
+  border: 2px solid #e6d3c4;
+  border-radius: 999px;
+  padding: 10px 16px;
+  outline: none;
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.name-input::placeholder { color: #b9a596; font-weight: 500; }
+.name-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255, 95, 126, 0.2); }
+.name-input:disabled { opacity: 0.6; }
+.btn.submit-btn { margin: 0; min-width: 0; padding: 10px 18px; font-size: 16px; white-space: nowrap; }
+.btn:disabled { opacity: 0.5; cursor: default; filter: none; transform: none; }
+.panel .hint { margin: 8px 2px 0; font-size: 12.5px; line-height: 1.35; color: var(--ink-soft); }
+.panel .submit-status { margin: 8px 0 0; font-size: 14px; font-weight: 600; min-height: 0; }
+.panel .submit-status:empty { display: none; }
+.submit-status.ok { color: var(--green-dark); font-size: 15px; }
+.submit-status.bad, .lb-note.bad { color: var(--accent-dark); }
+
+.lb-tabs { margin-top: 4px; }
+.lb-body { margin-top: 12px; min-height: 120px; }
+.panel .lb-note { margin: 28px 0 12px; font-size: 15px; }
+.panel .lb-resets { margin: 10px 0 0; font-size: 13px; }
+.lb-list { list-style: none; margin: 0; padding: 0; text-align: left; }
+.lb-list.compact { margin-top: 10px; }
+.lb-row {
+  display: grid;
+  grid-template-columns: 2.4em minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 7px 12px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.lb-row:nth-child(odd) { background: rgba(255, 255, 255, 0.6); }
+.lb-row.me { background: linear-gradient(#ffe9a8, #ffd166); box-shadow: 0 2px 0 #c99a2e; }
+.lb-rank { color: var(--ink-soft); font-variant-numeric: tabular-nums; text-align: right; padding-right: 4px; }
+.lb-row:nth-child(1) .lb-rank, .lb-row:nth-child(2) .lb-rank, .lb-row:nth-child(3) .lb-rank { color: #b8860b; font-weight: 800; }
+.lb-list.compact .lb-gap ~ .lb-row .lb-rank { color: var(--ink-soft); font-weight: 600; }
+.lb-name { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.lb-name-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; unicode-bidi: isolate; }
+.lb-you {
+  flex: none;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75);
+  color: #8a5a00;
+}
+.lb-score { font-variant-numeric: tabular-nums; font-weight: 800; color: var(--green-dark); }
+.lb-gap { text-align: center; color: var(--ink-soft); line-height: 1; padding: 2px 0; }
+
+@media (max-width: 420px) {
+  .submit-box { padding: 12px 10px 10px; }
+  .btn.submit-btn { padding: 10px 14px; }
+  .lb-row { padding: 6px 10px; font-size: 14px; }
+}

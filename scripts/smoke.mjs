@@ -8,18 +8,37 @@ import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import path from 'node:path';
 
-const PW = process.env.PLAYWRIGHT_CORE ?? '/home/hanwenz/.nvm/versions/node/v24.18.0/lib/node_modules/openclaw/node_modules/playwright-core/index.mjs';
 const CHROME = process.env.CHROME_PATH ?? path.join(homedir(), '.cache/ms-playwright/chromium-1223/chrome-linux/chrome');
 const OUT = process.env.OUT_DIR ?? '/tmp';
-const { chromium } = await import(PW);
+const { chromium } = await import(process.env.PLAYWRIGHT_CORE ?? 'playwright-core');
 
 let server = null;
 let base = process.env.BASE_URL;
 if (!base) {
   if (!existsSync('dist')) throw new Error('run npm run build first');
-  server = spawn('npx', ['vite', 'preview', '--port', '4173', '--strictPort'], { stdio: 'ignore' });
-  base = 'http://localhost:4173/suika-jelly/';
-  await new Promise((r) => setTimeout(r, 1500));
+  // Own port, and proof that the page served is this game: other projects' previews run on this machine too.
+  const port = process.env.PORT ?? '4177';
+  server = spawn('npx', ['vite', 'preview', '--port', port, '--strictPort'], { stdio: 'ignore', detached: true });
+  process.on('exit', () => {
+    try {
+      process.kill(-server.pid, 'SIGTERM');
+    } catch {
+      /* already gone */
+    }
+  });
+  base = `http://localhost:${port}/suika-jelly/`;
+  let up = false;
+  for (let i = 0; i < 60 && !up; i++) {
+    await new Promise((r) => setTimeout(r, 500));
+    if (server.exitCode !== null) throw new Error(`vite preview exited (is port ${port} in use?)`);
+    try {
+      const r = await fetch(base);
+      up = r.ok && (await r.text()).includes('Suika Jelly');
+    } catch {
+      /* not yet */
+    }
+  }
+  if (!up) throw new Error(`preview server did not come up on port ${port}`);
 }
 if (!base.endsWith('/')) base += '/';
 
@@ -35,6 +54,10 @@ async function run(name, viewport, opts = {}) {
   await page.goto(base + (opts.query ?? ''), { waitUntil: 'load' });
   await page.waitForFunction(() => !!window.__game, null, { timeout: 15000 });
   await page.screenshot({ path: `${OUT}/suika-${name}-title.png` });
+  // The leaderboard needs a scores API baked in at build time. This build may or may not have one;
+  // either way the title must agree with it (no dead buttons). `npm run smoke:lb` covers the feature.
+  const lb = await page.evaluate(() => window.__game.leaderboard.enabled);
+  if ((await page.locator('#lbBtn').count()) !== (lb ? 1 : 0)) throw new Error(`leaderboard enabled=${lb} but title button count disagrees`);
   await page.click('#playBtn');
   await page.waitForFunction(() => window.__game.state() === 'playing');
   // Drop a spread of fruits, some via real pointer taps, some via the debug hook.
@@ -59,7 +82,7 @@ async function run(name, viewport, opts = {}) {
     // Menu from pause keeps the game; the title then offers Resume.
     await page.keyboard.press('KeyP');
     await page.waitForSelector('#resumeBtn');
-    await page.click('.panel .btn.secondary:not(.active)');
+    await page.click('#menuBtn');
     await page.waitForSelector('#playBtn');
     await page.waitForSelector('#resumeBtn');
     await page.click('#resumeBtn');
@@ -110,6 +133,7 @@ async function run(name, viewport, opts = {}) {
     await page.waitForFunction(() => window.__game.state() === 'gameOver', null, { timeout: 15000 });
     await page.waitForTimeout(300);
     await page.screenshot({ path: `${OUT}/suika-${name}-over.png` });
+    if (!lb && (await page.locator('#nameInput, #submitBox, #lbBtn').count()) !== 0) throw new Error('leaderboard UI shown although no scores API is configured');
     await page.click('#restartBtn');
     await page.waitForFunction(() => window.__game.state() === 'playing' && window.__game.bodies().length === 0);
     console.log(`  ${name}: game over + restart OK`);
@@ -126,8 +150,5 @@ await run('desktop', { width: 1280, height: 720 }, { drops: 30, gameOver: true, 
 await run('zh-TW', { width: 800, height: 900 }, { query: '?lang=zh-TW', drops: 6 });
 
 await browser.close();
-if (server) server.kill();
-if (failures.length) {
-  console.error('smoke failures:', failures.join(', '));
-  process.exit(1);
-}
+if (failures.length) console.error('smoke failures:', failures.join(', '));
+process.exit(failures.length ? 1 : 0);

@@ -7,8 +7,10 @@ import { WORLD_H, WORLD_W } from './game/constants';
 import { Game, type GameEvents } from './game/Game';
 import { detectLang, setLang, type Lang } from './i18n';
 import { bindInput } from './input';
+import { createClient, loadName, myEntries, newGameId, rememberEntry, saveName, scoresUrl } from './net/leaderboard';
 import { Renderer } from './render/renderer';
-import { Hud } from './ui/hud';
+import { API_VERSION, sanitizeName } from '../shared/scoreRules';
+import { Hud, type LeaderboardPort } from './ui/hud';
 
 setLang(detectLang(), false);
 registerSW({ immediate: true });
@@ -41,16 +43,35 @@ const events: GameEvents = {
     renderer.impact(id, strength);
     if (strength > 2.5) sfx.drop(strength);
   },
-  onGameOver(score, best, newBest) {
+  onGameOver(score, best, newBest, stats) {
     music.stop();
     sfx.gameOver();
-    hud.gameOver(score, best, newBest);
+    hud.gameOver({ score, best, newBest, stats, gameId: newGameId() });
   },
 };
 
 const game = new Game(events);
 
-const hud = new Hud({
+/** Null when no scores API was configured at build time: the leaderboard UI then stays hidden. */
+const scores = createClient({ baseUrl: scoresUrl() });
+const leaderboard: LeaderboardPort | null = scores.enabled
+  ? {
+      async submit(name, over) {
+        const r = await scores.submitScore({ v: API_VERSION, gid: over.gameId, name, score: over.score, ...over.stats });
+        if (r.ok) {
+          saveName(r.data.entry.name);
+          rememberEntry(r.data.entry.id);
+        }
+        return r;
+      },
+      boards: () => scores.fetchBoards(),
+      lastName: () => sanitizeName(loadName()),
+      mine: () => myEntries(),
+    }
+  : null;
+
+const hud = new Hud(
+  {
   play: () => {
     audio.unlock();
     sfx.click();
@@ -88,7 +109,13 @@ const hud = new Hud({
     music.start();
     hud.hide();
   },
-});
+  click: () => {
+    audio.unlock();
+    sfx.click();
+  },
+  },
+  leaderboard,
+);
 
 function togglePause(): void {
   if (game.state !== 'playing') return;
@@ -150,7 +177,9 @@ declare global {
       renderer: Renderer;
       drop(x?: number): boolean;
       setNext(current: number, next?: number): void;
-      spawn(tier: number, x: number, y: number): number;
+      spawn(tier: number, x: number, y: number, pinned?: boolean): number;
+      stats(): ReturnType<Game['stats']>;
+      leaderboard: { enabled: boolean; url: string };
       step(ms: number): void;
       state(): string;
       score(): number;
@@ -167,7 +196,9 @@ window.__game = {
   renderer,
   drop: (x) => game.drop(x),
   setNext: (c, n) => game.setQueue(c, n),
-  spawn: (tier, x, y) => game.spawn(tier, x, y),
+  spawn: (tier, x, y, pinned) => game.spawn(tier, x, y, pinned),
+  stats: () => game.stats(),
+  leaderboard: { enabled: scores.enabled, url: scoresUrl() },
   step: (ms) => game.step(ms / 1000),
   state: () => game.state,
   score: () => game.score,
