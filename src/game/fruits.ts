@@ -22,18 +22,25 @@ export type FruitKey =
   | 'melon'
   | 'watermelon';
 
+/**
+ * Colours are chosen to be told apart at a glance, including by colour-blind players: besides
+ * hue, the fruits are spread across lightness (cherry and watermelon dark, apple and grape
+ * mid, pineapple and melon light), because lightness survives red-green colour blindness.
+ * test/palette.test.ts keeps every pair a minimum distance apart; `node scripts/palette.mjs`
+ * renders a contact sheet for judging changes by eye.
+ */
 export const FRUITS: readonly FruitSpec[] = [
-  { key: 'cherry', r: 16, color: '#ff3b5c', light: '#ffb3c1', dark: '#a8122e' },
-  { key: 'strawberry', r: 22, color: '#ff2d55', light: '#ffa4b5', dark: '#b0103a' },
-  { key: 'grape', r: 29, color: '#8d4fe0', light: '#d9c2ff', dark: '#4a1f8f' },
-  { key: 'dekopon', r: 34, color: '#ff9f1c', light: '#ffe0a8', dark: '#b85e00' },
-  { key: 'persimmon', r: 42, color: '#ff7a1a', light: '#ffc99a', dark: '#b34700' },
-  { key: 'apple', r: 50, color: '#e63946', light: '#ffb8bd', dark: '#8f1520' },
-  { key: 'pear', r: 58, color: '#c9d84a', light: '#f3fbb0', dark: '#7e8a1d' },
-  { key: 'peach', r: 66, color: '#ffa07a', light: '#ffe3d1', dark: '#c65a3b' },
-  { key: 'pineapple', r: 76, color: '#ffc836', light: '#fff3b8', dark: '#b8860b' },
-  { key: 'melon', r: 88, color: '#a5e07a', light: '#eaffd0', dark: '#4f8f2f' },
-  { key: 'watermelon', r: 100, color: '#2f9e57', light: '#a8f0a0', dark: '#164d2c' },
+  { key: 'cherry', r: 16, color: '#9f033a', light: '#d07c87', dark: '#4a0016' },
+  { key: 'strawberry', r: 22, color: '#fe3d87', light: '#fed0da', dark: '#ab0553' },
+  { key: 'grape', r: 29, color: '#8a3ee0', light: '#c4a4fc', dark: '#50028f' },
+  { key: 'dekopon', r: 34, color: '#feaf28', light: '#fef1e1', dark: '#b47808' },
+  { key: 'persimmon', r: 42, color: '#e96402', light: '#ffcfb9', dark: '#943d01' },
+  { key: 'apple', r: 50, color: '#d90a1a', light: '#fe9c91', dark: '#7c0109' },
+  { key: 'pear', r: 58, color: '#79da53', light: '#deffd3', dark: '#409b0a' },
+  { key: 'peach', r: 66, color: '#fed1cf', light: '#fdf0ef', dark: '#ca908d' },
+  { key: 'pineapple', r: 76, color: '#fbee36', light: '#fdf8a7', dark: '#baaf08' },
+  { key: 'melon', r: 88, color: '#20baa1', light: '#bafbeb', dark: '#047a69' },
+  { key: 'watermelon', r: 100, color: '#198f38', light: '#98ce9d', dark: '#01511a' },
 ];
 
 export const TIER_COUNT = FRUITS.length;

@@ -25,6 +25,8 @@ npm test           # vitest: rules, merge maths, song data, i18n
 npm run build      # tsc + vite → dist/
 npm run smoke      # headless Chromium: plays, checks audio output, screenshots to /tmp
 npm run assets     # regenerate icons, iOS launch screens and cover.png into public/
+                   # (ONLY=cover npm run assets for just the link-preview image)
+node scripts/palette.mjs   # fruit colours: contact sheet and distances, see below
 
 npm run scores:dev # the leaderboard Worker locally on :8787 (npm run dev talks to it)
 npm run scores:e2e # API checks against a throwaway local Worker
@@ -83,6 +85,23 @@ kept; everything else is pruned daily. Weeks start on Monday 00:00 UTC.
 
 **Changing the rules.** `shared/scoreRules.ts` mirrors the scoring table and drop cooldown.
 If those change in the game, update it too; `npm test` fails when they disagree.
+
+## Fruit colours
+
+Each fruit has its own colour so it can be recognised at a glance: wine-red cherry, pink
+strawberry, violet grape, amber dekopon, orange persimmon, red apple, green pear, pale pink
+peach, yellow pineapple, jade melon, dark green watermelon. Besides hue the fruits are spread
+across lightness, because lightness is what remains for red-green colour-blind players.
+
+`node scripts/palette.mjs` draws every fruit at the same size, measures the colour each one
+really shows, and prints how far apart every pair is for normal vision and for the three
+kinds of colour blindness, with a contact sheet in `/tmp/suika-palette.png`. Use it when
+changing colours in `src/game/fruits.ts`; `npm test` enforces minimum distances.
+
+Eleven fruits cannot all be separated by colour alone for colour-blind players. Where colour
+runs out (dekopon and pear, for example), shape and pattern carry the difference: the
+dekopon's knob, strawberry seeds, the pineapple's lattice and crown, the melon's net, the
+watermelon's stripes.
 
 ## Scoring
 

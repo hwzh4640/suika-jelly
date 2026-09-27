@@ -28,6 +28,9 @@ async function icon(size, file) {
   await p.screenshot({ path: file });
   await ctx.close();
 }
+// ONLY=cover regenerates just the link-preview image (for example after a palette change).
+const coverOnly = process.env.ONLY === 'cover';
+if (!coverOnly) {
 await icon(180, 'public/apple-touch-icon.png');
 await icon(192, 'public/icons/icon-192.png');
 await icon(512, 'public/icons/icon-512.png');
@@ -59,6 +62,7 @@ for (const [w, h, dpr] of devices) {
   }
 }
 console.log(links.join('\n'));
+}
 
 // Open Graph cover: the real game with a curated pile of jellies and the title beside the jar.
 if (!existsSync('dist')) throw new Error('run npm run build first (cover.png renders from the preview build)');

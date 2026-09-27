@@ -245,8 +245,8 @@ const DETAIL: Partial<Record<FruitSpec['key'], Detail>> = {
   },
   apple(g, s) {
     const blush = g.createRadialGradient(0.35, 0.35, 0, 0.3, 0.3, 0.9);
-    blush.addColorStop(0, 'rgba(255,214,90,0.5)');
-    blush.addColorStop(1, 'rgba(255,214,90,0)');
+    blush.addColorStop(0, 'rgba(255,190,120,0.28)');
+    blush.addColorStop(1, 'rgba(255,190,120,0)');
     g.fillStyle = blush;
     g.fillRect(-1, -1, 2, 2);
     g.fillStyle = withAlpha(s.dark, 0.35);
@@ -276,9 +276,9 @@ const DETAIL: Partial<Record<FruitSpec['key'], Detail>> = {
   },
   peach(g, s) {
     const tone = g.createLinearGradient(-0.8, -0.8, 0.8, 0.8);
-    tone.addColorStop(0, 'rgba(255,120,150,0.55)');
-    tone.addColorStop(0.55, 'rgba(255,160,122,0)');
-    tone.addColorStop(1, 'rgba(255,225,160,0.55)');
+    tone.addColorStop(0, 'rgba(255,120,160,0.5)');
+    tone.addColorStop(0.55, 'rgba(255,170,150,0)');
+    tone.addColorStop(1, 'rgba(255,225,190,0.35)');
     g.fillStyle = tone;
     g.fillRect(-1, -1, 2, 2);
     g.strokeStyle = withAlpha(s.dark, 0.4);
