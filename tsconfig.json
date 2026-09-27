@@ -15,5 +15,5 @@
     "noEmit": true,
     "types": ["vite/client", "vite-plugin-pwa/client"]
   },
-  "include": ["src", "test"]
+  "include": ["src", "test", "shared"]
 }
