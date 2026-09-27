@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Game, type GameEvents } from '../src/game/Game';
+import { Game, type GameEvents, type GameStats } from '../src/game/Game';
 import { DANGER_Y, JAR_BOTTOM } from '../src/game/constants';
 
 class MemStore {
@@ -61,10 +61,39 @@ describe('Game', () => {
     expect(seen).toEqual([g.next]);
   });
 
+  it('tracks drops, merges and the highest tier, and resets them on a new game', () => {
+    const g = new Game({}, new MemStore());
+    g.newGame(7);
+    expect(g.stats()).toEqual({ secs: 0, drops: 0, merges: 0, tier: 0 });
+    g.setQueue(2, 2);
+    g.drop(240);
+    run(g, 1.2);
+    g.setQueue(2, 0);
+    g.drop(240);
+    run(g, 1.5);
+    const s = g.stats();
+    expect(s.drops).toBe(2);
+    expect(s.merges).toBe(1);
+    expect(s.tier).toBe(3);
+    expect(s.secs).toBe(3);
+    expect(g.score).toBe(6);
+    g.newGame(8);
+    expect(g.stats()).toEqual({ secs: 0, drops: 0, merges: 0, tier: 0 });
+  });
+
+  it('fruits placed by the debug spawn hook are not counted as drops', () => {
+    const g = new Game({}, new MemStore());
+    g.newGame(9);
+    g.spawn(5, 200, JAR_BOTTOM - 50);
+    run(g, 0.2);
+    expect(g.stats().drops).toBe(0);
+    expect(g.stats().tier).toBe(0);
+  });
+
   it('a settled fruit above the danger line ends the game and persists best', () => {
     const store = new MemStore();
-    let over: [number, number, boolean] | null = null;
-    const g = new Game({ onGameOver: (s, b, n) => (over = [s, b, n]) }, store);
+    let over: [number, number, boolean, GameStats] | null = null;
+    const g = new Game({ onGameOver: (s, b, n, st) => (over = [s, b, n, st]) }, store);
     g.newGame(4);
     g.spawn(0, 240, DANGER_Y - 10, true);
     run(g, 0.5);
@@ -73,6 +102,7 @@ describe('Game', () => {
     run(g, 1.5);
     expect(g.state).toBe('gameOver');
     expect(over).not.toBeNull();
+    expect(over![3]).toEqual(g.stats());
     expect(store.getItem('suika.best')).toBe(String(g.best));
   });
 

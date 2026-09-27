@@ -45,6 +45,9 @@ export function bindInput(canvas: HTMLCanvasElement, game: Game, renderer: Rende
     if (ev.pointerId === activePointer) activePointer = null;
   };
   const onKeyDown = (ev: KeyboardEvent) => {
+    // Typing in a text field (the leaderboard name) must never aim, drop, pause or mute.
+    const el = ev.target as HTMLElement | null;
+    if (el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))) return;
     if (ev.repeat && (ev.code === 'Space' || ev.code === 'Enter')) return;
     if ((ev.target as HTMLElement | null)?.tagName === 'BUTTON' && (ev.code === 'Space' || ev.code === 'Enter')) return;
     switch (ev.code) {

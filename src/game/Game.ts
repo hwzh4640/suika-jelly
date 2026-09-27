@@ -23,7 +23,19 @@ export interface GameEvents {
   /** `result` is null when two watermelons vanish. */
   onMerge?(tier: number, result: number | null, x: number, y: number, points: number, id: number | null): void;
   onImpact?(id: number, strength: number): void;
-  onGameOver?(score: number, best: number, newBest: boolean): void;
+  onGameOver?(score: number, best: number, newBest: boolean, stats: GameStats): void;
+}
+
+/** Facts about a finished (or running) game, submitted alongside a leaderboard score. */
+export interface GameStats {
+  /** Simulated seconds played, rounded up. Pauses do not count. */
+  secs: number;
+  /** Fruits the player dropped. */
+  drops: number;
+  /** Merges that happened, including a vanishing watermelon pair. */
+  merges: number;
+  /** Highest tier (0-10) that was dropped or created by a merge. */
+  tier: number;
 }
 
 export interface KeyValueStore {
@@ -61,6 +73,9 @@ export class Game {
   /** 0..1: how far the settled pile reaches from the floor to the danger line. */
   fill = 0;
   time = 0;
+  private drops = 0;
+  private merges = 0;
+  private maxTier = 0;
   private accumulator = 0;
   private rng = new Rng(1);
   private store: KeyValueStore | null;
@@ -88,6 +103,9 @@ export class Game {
     this.physics.clear();
     this.score = 0;
     this.time = 0;
+    this.drops = 0;
+    this.merges = 0;
+    this.maxTier = 0;
     this.accumulator = 0;
     this.cooldown = 0;
     this.overTimer = 0;
@@ -131,6 +149,8 @@ export class Game {
     const tier = this.current;
     const dropX = this.aimX;
     this.physics.spawn(tier, dropX, DROP_Y, this.time);
+    this.drops++;
+    if (tier > this.maxTier) this.maxTier = tier;
     // Advance the queue before telling listeners, so `next` already means the upcoming fruit.
     this.current = this.next;
     this.next = this.rollTier();
@@ -188,6 +208,8 @@ export class Game {
       const result = nextTier(tier);
       let id: number | null = null;
       if (result !== null) id = this.physics.spawn(result, pos.x, pos.y, this.time, vel).plugin.id;
+      this.merges++;
+      if (result !== null && result > this.maxTier) this.maxTier = result;
       const points = SCORE[tier] ?? 0;
       this.score += points;
       if (this.score > this.best) this.best = this.score;
@@ -223,7 +245,11 @@ export class Game {
       /* ignore */
     }
     this.setState('gameOver');
-    this.events.onGameOver?.(this.score, this.best, newBest);
+    this.events.onGameOver?.(this.score, this.best, newBest, this.stats());
+  }
+
+  stats(): GameStats {
+    return { secs: Math.ceil(this.time), drops: this.drops, merges: this.merges, tier: this.maxTier };
   }
 
   /** Snapshot of every fruit in the jar for rendering. */
