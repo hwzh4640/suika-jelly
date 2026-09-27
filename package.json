@@ -5,19 +5,23 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && tsc -p worker/tsconfig.json && vite build",
     "preview": "vite preview --host",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc -p worker/tsconfig.json",
     "smoke": "node scripts/smoke.mjs",
-    "assets": "node scripts/assets.mjs"
+    "assets": "node scripts/assets.mjs",
+    "scores:dev": "wrangler dev --local --port 8787 --config worker/wrangler.toml --var ALLOW_LOCALHOST:true",
+    "scores:e2e": "node scripts/scores-e2e.mjs"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260927.1",
     "@types/matter-js": "^0.20.2",
     "typescript": "^7.0.2",
     "vite": "^8.2.2",
     "vite-plugin-pwa": "^1.3.0",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.0",
+    "wrangler": "^4.142.0"
   },
   "dependencies": {
     "matter-js": "^0.20.0"

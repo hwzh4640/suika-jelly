@@ -1,0 +1,20 @@
+name = "suika-jelly-scores"
+main = "src/index.ts"
+compatibility_date = "2026-08-01"
+workers_dev = true
+
+[vars]
+# Comma-separated list of origins allowed to read and submit scores.
+ALLOWED_ORIGINS = "https://pages.hz.ax,https://hwzh4640.github.io"
+# Local development only (`npm run scores:dev` turns it on).
+ALLOW_LOCALHOST = "false"
+
+[durable_objects]
+bindings = [{ name = "SCORES", class_name = "Scoreboard" }]
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Scoreboard"]
+
+[observability]
+enabled = true
