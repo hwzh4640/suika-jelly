@@ -4,7 +4,7 @@ A browser take on the Suika (watermelon) merge game: drop glossy jelly fruits in
 mason jar, and when two identical jellies touch they squish together into the next fruit.
 Grow a watermelon, don't let the jar overflow.
 
-**Play:** https://pages.hz.ax/suika-jelly/
+**Play:** https://arcade.hz.ax/suika-jelly/
 
 - Works on phones (touch: drag to aim, release to drop) and desktop (mouse or `←` `→` + `Space`).
 - English, 简体中文, 繁體中文 — auto-detected, switchable in the menu, or `?lang=zh-TW`.
