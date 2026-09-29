@@ -5,7 +5,8 @@ workers_dev = true
 
 [vars]
 # Comma-separated list of origins allowed to read and submit scores.
-ALLOWED_ORIGINS = "https://pages.hz.ax,https://hwzh4640.github.io"
+# arcade.hz.ax is where the game lives; pages.hz.ax was its first address.
+ALLOWED_ORIGINS = "https://arcade.hz.ax,https://pages.hz.ax,https://hwzh4640.github.io"
 # Local development only (`npm run scores:dev` turns it on).
 ALLOW_LOCALHOST = "false"
 

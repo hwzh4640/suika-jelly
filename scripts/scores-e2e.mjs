@@ -163,9 +163,9 @@ async function main() {
     const { base } = w2;
     let p = await post(base, sub(), LOCAL);
     check('localhost origin is refused in production settings', p.status === 403 && p.json?.error === 'origin', JSON.stringify(p.json));
-    p = await post(base, sub(), 'https://pages.hz.ax');
+    p = await post(base, sub(), 'https://arcade.hz.ax');
     check('the live site origin is accepted', p.status === 200 && p.json?.ok === true, JSON.stringify(p.json));
-    p = await post(base, sub(), 'https://pages.hz.ax.evil.example');
+    p = await post(base, sub(), 'https://arcade.hz.ax.evil.example');
     check('a look-alike origin is refused', p.status === 403);
     const r = await fetch(`${base}/scores/1`, { method: 'DELETE', headers: { authorization: 'Bearer undefined' } });
     check('delete route does not exist without a configured token', r.status === 404, String(r.status));
